@@ -1,7 +1,7 @@
 -- Function to normalize message and catch common bypasses
 local function normalize(msg)
     msg = string.lower(msg)
-    msg = msg:gsub("[%p%c%s]", "")
+    msg = msg:gsub("[%p%c%s]", "") -- remove punctuation, control chars, spaces
     msg = msg
         :gsub("0", "o")
         :gsub("1", "i")
@@ -17,7 +17,22 @@ end
 
 -- Expanded dictionary
 local words = {
-    -- Bullying / Harassment
+    -- One-word & short insults
+    ['l'] = 'Bullying',
+    ['looser'] = 'Bullying',
+    ['loser'] = 'Bullying',
+    ['shutup'] = 'Bullying',
+    ['yousuck'] = 'Bullying',
+    ['getlost'] = 'Bullying',
+    ['cryaboutit'] = 'Bullying',
+    ['ihateyou'] = 'Bullying',
+    ['killurself'] = 'Bullying',
+    ['dumbass'] = 'Bullying',
+    ['bitch'] = 'Bullying',
+    ['asshole'] = 'Bullying',
+    ['bastard'] = 'Bullying',
+
+    -- Existing bullying entries
     ['gay'] = 'Bullying', ['lesbian'] = 'Bullying', ['retard'] = 'Bullying', ['r3tard'] = 'Bullying',
     ['clown'] = 'Bullying', ['bozo'] = 'Bullying', ['getalife'] = 'Bullying', ['nolife'] = 'Bullying',
     ['fatherless'] = 'Bullying', ['motherless'] = 'Bullying', ['dumb'] = 'Bullying', ['stupid'] = 'Bullying',
@@ -25,13 +40,14 @@ local words = {
     ['kys'] = 'Bullying', ['k!s'] = 'Bullying', ['kyslf'] = 'Bullying', ['kysyourself'] = 'Bullying',
     ['die'] = 'Bullying', ['d!e'] = 'Bullying', ['d13'] = 'Bullying', ['unalive'] = 'Bullying',
     ['killyou'] = 'Bullying', ['kill'] = 'Bullying', ['k!ll'] = 'Bullying', ['kll'] = 'Bullying',
-    ['loser'] = 'Bullying', ['fat'] = 'Bullying', ['fatty'] = 'Bullying', ['skid'] = 'Bullying',
-    ['sk1d'] = 'Bullying', ['idiot'] = 'Bullying', ['moron'] = 'Bullying', ['worthless'] = 'Bullying',
-    ['nobodylikesyou'] = 'Bullying', ['goaway'] = 'Bullying', ['nobodycares'] = 'Bullying', ['bot'] = 'Bullying',
-    ['trash'] = 'Bullying', ['npc'] = 'Bullying', ['smd'] = 'Bullying', ['suckmy'] = 'Bullying',
-    ['d1e'] = 'Bullying', ['dum'] = 'Bullying', ['fool'] = 'Bullying', ['scrub'] = 'Bullying',
+    ['fat'] = 'Bullying', ['fatty'] = 'Bullying', ['skid'] = 'Bullying',
+    ['sk1d'] = 'Bullying', ['idiot'] = 'Bullying', ['moron'] = 'Bullying',
+    ['worthless'] = 'Bullying', ['nobodylikesyou'] = 'Bullying', ['goaway'] = 'Bullying',
+    ['nobodycares'] = 'Bullying', ['bot'] = 'Bullying', ['trash'] = 'Bullying', ['npc'] = 'Bullying',
+    ['smd'] = 'Bullying', ['suckmy'] = 'Bullying', ['d1e'] = 'Bullying', ['dum'] = 'Bullying',
+    ['fool'] = 'Bullying', ['scrub'] = 'Bullying',
 
-    -- Slurs and Identity Attacks
+    -- Identity-based Slurs
     ['nigger'] = 'Bullying', ['n1gger'] = 'Bullying', ['n!gger'] = 'Bullying', ['ni99er'] = 'Bullying',
     ['nigg'] = 'Bullying', ['niga'] = 'Bullying', ['nibba'] = 'Bullying',
     ['faggot'] = 'Bullying', ['f@ggot'] = 'Bullying', ['f@g'] = 'Bullying', ['fgt'] = 'Bullying',
@@ -56,6 +72,7 @@ local words = {
     ['bitly'] = 'Offsite Links', ['goo.gl'] = 'Offsite Links'
 }
 
+-- Webhook reporter
 local function sendWebhook(speaker, msg, keyword, category)
     local plr = game.Players:FindFirstChild(speaker)
     if not plr then return end
@@ -68,15 +85,15 @@ local function sendWebhook(speaker, msg, keyword, category)
             ["description"] = "A message violated the Roblox ToS and was auto-reported.",
             ["color"] = tonumber(0xff3333),
             ["fields"] = {
-                {"name" = "👤 Username", "value" = string.format("[%s](https://www.roblox.com/users/%d)", plr.Name, plr.UserId), "inline" = true},
-                {"name" = "🧠 Message", "value" = msg, "inline" = false},
-                {"name" = "🚫 Trigger", "value" = "`" .. keyword .. "` (" .. category .. ")", "inline" = true},
-                {"name" = "🕒 Time", "value" = os.date("%Y-%m-%d %H:%M:%S"), "inline" = true},
-                {"name" = "🎮 Game", "value" = "[" .. gameName .. "](https://www.roblox.com/games/" .. game.PlaceId .. ")", "inline" = false}
+                {["name"] = "👤 Username", ["value"] = string.format("[%s](https://www.roblox.com/users/%d)", plr.Name, plr.UserId), ["inline"] = true},
+                {["name"] = "🧠 Message", ["value"] = msg, ["inline"] = false},
+                {["name"] = "🚫 Trigger", ["value"] = "`" .. keyword .. "` (" .. category .. ")", ["inline"] = true},
+                {["name"] = "🕒 Time", ["value"] = os.date("%Y-%m-%d %H:%M:%S"), ["inline"] = true},
+                {["name"] = "🎮 Game", ["value"] = "[" .. gameName .. "](https://www.roblox.com/games/" .. game.PlaceId .. ")", ["inline"] = false}
             },
-            ["thumbnail"] = {"url" = avatar},
-            ["footer"] = {"text" = "AutoReport Logger"},
-            ["author"] = {"name" = "Roblox AutoReporter"}
+            ["thumbnail"] = {["url"] = avatar},
+            ["footer"] = {["text"] = "AutoReport Logger"},
+            ["author"] = {["name"] = "Roblox AutoReporter"}
         }}
     }
 
@@ -86,10 +103,11 @@ local function sendWebhook(speaker, msg, keyword, category)
         Url = autoreportcfg.Webhook,
         Body = http:JSONEncode(embed),
         Method = "POST",
-        Headers = {"Content-Type" = "application/json"}
+        Headers = {["Content-Type"] = "application/json"}
     })
 end
 
+-- Main handler
 function handler(msg, speaker)
     local norm = normalize(msg)
     for word, reason in pairs(words) do
