@@ -1,80 +1,61 @@
 -- Function to normalize message and catch common bypasses
 local function normalize(msg)
     msg = string.lower(msg)
-    msg = msg:gsub("[%p%c%s]", "") -- remove punctuation, control chars, and spaces
-
-    -- Character substitutions (leetspeak/common evasion)
+    msg = msg:gsub("[%p%c%s]", "")
     msg = msg
         :gsub("0", "o")
         :gsub("1", "i")
-        :gsub("2", "z")
         :gsub("3", "e")
         :gsub("4", "a")
-        :gsub("5", "s")
-        :gsub("6", "g")
-        :gsub("7", "t")
-        :gsub("8", "b")
-        :gsub("9", "g")
         :gsub("@", "a")
         :gsub("%$", "s")
         :gsub("!", "i")
+        :gsub("5", "s")
         :gsub("|", "i")
-        :gsub("£", "e")
-        :gsub("€", "e")
-        :gsub("¢", "c")
-        :gsub("§", "s")
-        :gsub("™", "tm")
-        :gsub("æ", "ae")
-        :gsub("œ", "oe")
-        :gsub("ß", "ss")
-
     return msg
 end
 
 -- Expanded dictionary
 local words = {
-    -- Bullying
-    ['gay'] = 'Bullying', ['lesbian'] = 'Bullying', ['retard'] = 'Bullying',
-    ['clown'] = 'Bullying', ['cl0wn'] = 'Bullying', ['bozo'] = 'Bullying',
-    ['getalife'] = 'Bullying', ['nolife'] = 'Bullying', ['fatherless'] = 'Bullying',
-    ['motherless'] = 'Bullying', ['dumb'] = 'Bullying', ['stupid'] = 'Bullying',
-    ['cringe'] = 'Bullying', ['skillissue'] = 'Bullying', ['ugly'] = 'Bullying',
-    ['child'] = 'Bullying', ['kys'] = 'Bullying', ['die'] = 'Bullying',
-    ['d!e'] = 'Bullying', ['killyou'] = 'Bullying', ['kill'] = 'Bullying',
-    ['k!ll'] = 'Bullying', ['loser'] = 'Bullying', ['fat'] = 'Bullying',
-    ['fatty'] = 'Bullying', ['skid'] = 'Bullying', ['sk1d'] = 'Bullying',
-    ['f@ggot'] = 'Bullying', ['f@g'] = 'Bullying', ['n1gger'] = 'Bullying',
-    ['n!gger'] = 'Bullying', ['ni99er'] = 'Bullying', ['nibba'] = 'Bullying',
-    ['tranny'] = 'Bullying', ['tr4nny'] = 'Bullying', ['simp'] = 'Bullying',
-    ['incel'] = 'Bullying', ['beta'] = 'Bullying', ['weak'] = 'Bullying',
-    ['crybaby'] = 'Bullying', ['goaway'] = 'Bullying', ['nobodylikesyou'] = 'Bullying',
+    -- Bullying / Harassment
+    ['gay'] = 'Bullying', ['lesbian'] = 'Bullying', ['retard'] = 'Bullying', ['r3tard'] = 'Bullying',
+    ['clown'] = 'Bullying', ['bozo'] = 'Bullying', ['getalife'] = 'Bullying', ['nolife'] = 'Bullying',
+    ['fatherless'] = 'Bullying', ['motherless'] = 'Bullying', ['dumb'] = 'Bullying', ['stupid'] = 'Bullying',
+    ['cringe'] = 'Bullying', ['skillissue'] = 'Bullying', ['ugly'] = 'Bullying', ['child'] = 'Bullying',
+    ['kys'] = 'Bullying', ['k!s'] = 'Bullying', ['kyslf'] = 'Bullying', ['kysyourself'] = 'Bullying',
+    ['die'] = 'Bullying', ['d!e'] = 'Bullying', ['d13'] = 'Bullying', ['unalive'] = 'Bullying',
+    ['killyou'] = 'Bullying', ['kill'] = 'Bullying', ['k!ll'] = 'Bullying', ['kll'] = 'Bullying',
+    ['loser'] = 'Bullying', ['fat'] = 'Bullying', ['fatty'] = 'Bullying', ['skid'] = 'Bullying',
+    ['sk1d'] = 'Bullying', ['idiot'] = 'Bullying', ['moron'] = 'Bullying', ['worthless'] = 'Bullying',
+    ['nobodylikesyou'] = 'Bullying', ['goaway'] = 'Bullying', ['nobodycares'] = 'Bullying', ['bot'] = 'Bullying',
+    ['trash'] = 'Bullying', ['npc'] = 'Bullying', ['smd'] = 'Bullying', ['suckmy'] = 'Bullying',
+    ['d1e'] = 'Bullying', ['dum'] = 'Bullying', ['fool'] = 'Bullying', ['scrub'] = 'Bullying',
 
-    -- Scamming / Exploits
-    ['hack'] = 'Scamming', ['cheat'] = 'Scamming', ['exploit'] = 'Scamming',
-    ['executor'] = 'Scamming', ['dll'] = 'Scamming', ['inject'] = 'Scamming',
-    ['injector'] = 'Scamming', ['.exe'] = 'Scamming', ['ex3'] = 'Scamming',
-    ['h@ck'] = 'Scamming', ['bl0x'] = 'Scamming', ['krnl'] = 'Scamming',
-    ['synapse'] = 'Scamming', ['script'] = 'Scamming', ['aimbot'] = 'Scamming',
-    ['triggerbot'] = 'Scamming', ['silentaim'] = 'Scamming', ['esp'] = 'Scamming',
-    ['speedhack'] = 'Scamming', ['godmode'] = 'Scamming', ['noclip'] = 'Scamming',
-    ['flyhack'] = 'Scamming',
+    -- Slurs and Identity Attacks
+    ['nigger'] = 'Bullying', ['n1gger'] = 'Bullying', ['n!gger'] = 'Bullying', ['ni99er'] = 'Bullying',
+    ['nigg'] = 'Bullying', ['niga'] = 'Bullying', ['nibba'] = 'Bullying',
+    ['faggot'] = 'Bullying', ['f@ggot'] = 'Bullying', ['f@g'] = 'Bullying', ['fgt'] = 'Bullying',
+    ['faqqot'] = 'Bullying', ['tranny'] = 'Bullying', ['tr4nny'] = 'Bullying', ['tr@nny'] = 'Bullying',
+    ['he-she'] = 'Bullying', ['shemale'] = 'Bullying', ['dyke'] = 'Bullying', ['d!ke'] = 'Bullying',
+    ['queer'] = 'Bullying', ['monkey'] = 'Bullying', ['ape'] = 'Bullying', ['coon'] = 'Bullying',
+    ['wetback'] = 'Bullying', ['beaner'] = 'Bullying', ['chink'] = 'Bullying', ['gook'] = 'Bullying',
 
-    -- Offsite / Phishing
-    ['discord'] = 'Offsite Links', ['d!scord'] = 'Offsite Links',
-    ['d1sc0rd'] = 'Offsite Links', ['blueapp'] = 'Offsite Links',
-    ['youtube'] = 'Offsite Links', ['yt'] = 'Offsite Links',
-    ['.gg'] = 'Offsite Links', ['https://'] = 'Offsite Links',
-    ['http://'] = 'Offsite Links', ['link'] = 'Offsite Links',
-    ['l1nk'] = 'Offsite Links', ['tiktok'] = 'Offsite Links',
-    ['invite'] = 'Offsite Links', ['joinmyserver'] = 'Offsite Links',
-    ['freerobux'] = 'Offsite Links', ['r0bux'] = 'Offsite Links',
-    ['robuxgiveaway'] = 'Offsite Links', ['robuxgen'] = 'Offsite Links',
-    ['clickhere'] = 'Offsite Links', ['verify'] = 'Offsite Links',
-    ['nitro'] = 'Offsite Links', ['giftcard'] = 'Offsite Links',
-    ['promo'] = 'Offsite Links'
+    -- Exploiting / Scamming
+    ['hack'] = 'Scamming', ['h@ck'] = 'Scamming', ['cheat'] = 'Scamming', ['exploit'] = 'Scamming',
+    ['executor'] = 'Scamming', ['inject'] = 'Scamming', ['dll'] = 'Scamming', ['injector'] = 'Scamming',
+    ['.exe'] = 'Scamming', ['ex3'] = 'Scamming', ['blox'] = 'Scamming', ['krnl'] = 'Scamming',
+    ['synapse'] = 'Scamming', ['silentaim'] = 'Scamming', ['aimbot'] = 'Scamming',
+    ['esp'] = 'Scamming', ['autoclick'] = 'Scamming', ['flyhack'] = 'Scamming',
+
+    -- Offsite Links
+    ['discord'] = 'Offsite Links', ['d!scord'] = 'Offsite Links', ['d1sc0rd'] = 'Offsite Links',
+    ['blueapp'] = 'Offsite Links', ['youtube'] = 'Offsite Links', ['yt'] = 'Offsite Links',
+    ['.gg'] = 'Offsite Links', ['https://'] = 'Offsite Links', ['link'] = 'Offsite Links',
+    ['l1nk'] = 'Offsite Links', ['tiktok'] = 'Offsite Links', ['invite'] = 'Offsite Links',
+    ['freerobux'] = 'Offsite Links', ['r0bux'] = 'Offsite Links', ['tinyurl'] = 'Offsite Links',
+    ['bitly'] = 'Offsite Links', ['goo.gl'] = 'Offsite Links'
 }
 
--- Send webhook notification
 local function sendWebhook(speaker, msg, keyword, category)
     local plr = game.Players:FindFirstChild(speaker)
     if not plr then return end
@@ -82,20 +63,20 @@ local function sendWebhook(speaker, msg, keyword, category)
     local avatar = string.format("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png", plr.UserId)
     local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
     local embed = {
-        ["embeds"] = { {
+        ["embeds"] = {{
             ["title"] = "🚨 AutoReport Triggered",
             ["description"] = "A message violated the Roblox ToS and was auto-reported.",
             ["color"] = tonumber(0xff3333),
             ["fields"] = {
-                {["name"] = "👤 Username", ["value"] = string.format("[%s](https://www.roblox.com/users/%d)", plr.Name, plr.UserId), ["inline"] = true},
-                {["name"] = "🧠 Message", ["value"] = msg, ["inline"] = false},
-                {["name"] = "🚫 Trigger", ["value"] = "`" .. keyword .. "` (" .. category .. ")", ["inline"] = true},
-                {["name"] = "🕒 Time", ["value"] = os.date("%Y-%m-%d %H:%M:%S"), ["inline"] = true},
-                {["name"] = "🎮 Game", ["value"] = "[" .. gameName .. "](https://www.roblox.com/games/" .. game.PlaceId .. ")", ["inline"] = false}
+                {"name" = "👤 Username", "value" = string.format("[%s](https://www.roblox.com/users/%d)", plr.Name, plr.UserId), "inline" = true},
+                {"name" = "🧠 Message", "value" = msg, "inline" = false},
+                {"name" = "🚫 Trigger", "value" = "`" .. keyword .. "` (" .. category .. ")", "inline" = true},
+                {"name" = "🕒 Time", "value" = os.date("%Y-%m-%d %H:%M:%S"), "inline" = true},
+                {"name" = "🎮 Game", "value" = "[" .. gameName .. "](https://www.roblox.com/games/" .. game.PlaceId .. ")", "inline" = false}
             },
-            ["thumbnail"] = {["url"] = avatar},
-            ["footer"] = {["text"] = "AutoReport Logger"},
-            ["author"] = {["name"] = "Roblox AutoReporter"}
+            ["thumbnail"] = {"url" = avatar},
+            ["footer"] = {"text" = "AutoReport Logger"},
+            ["author"] = {"name" = "Roblox AutoReporter"}
         }}
     }
 
@@ -105,15 +86,14 @@ local function sendWebhook(speaker, msg, keyword, category)
         Url = autoreportcfg.Webhook,
         Body = http:JSONEncode(embed),
         Method = "POST",
-        Headers = {["Content-Type"] = "application/json"}
+        Headers = {"Content-Type" = "application/json"}
     })
 end
 
--- Core handler
 function handler(msg, speaker)
     local norm = normalize(msg)
     for word, reason in pairs(words) do
-        if norm:find(word) then
+        if string.find(norm, word, 1, true) then
             local player = game.Players:FindFirstChild(speaker)
             if player then
                 game.Players:ReportAbuse(player, reason, "Reported for " .. reason)
